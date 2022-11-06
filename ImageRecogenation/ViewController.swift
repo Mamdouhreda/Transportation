@@ -35,15 +35,16 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
     
     func detect(image: CIImage){
         let config = MLModelConfiguration()
-        guard let model = try? VNCoreMLModel(for: YOLOv3Tiny(configuration: config).model)else{
+        guard let model = try? VNCoreMLModel(for: Inceptionv3(configuration: config).model)else{
             fatalError("loading core model failed")
         }
         let request = VNCoreMLRequest(model: model) { request, error in
             guard let results = request.results as? [VNClassificationObservation] else{
                 fatalError("observation error")
             }
-            print(results)
-        }
+            let firstResult = results.first?.identifier
+            self.navigationItem.title = firstResult
+         }
         let handler = VNImageRequestHandler(ciImage: image)
         
         do {
@@ -55,6 +56,7 @@ class ViewController: UIViewController,UIImagePickerControllerDelegate,UINavigat
         
     }
     @IBAction func CameraPressed(_ sender: Any) {
+        present(imagePicker, animated: true, completion: nil)
     }
     
 }
